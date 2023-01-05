@@ -77,6 +77,7 @@ class SolCast(Forecast):
         retVal         = False
         in_day         = (now_utc > mySun['sunrise'] and now_utc < mySun['sunset'])
 
+        print(f"self._force={self._force}, in_day={in_day}, self._interval={self._interval}")
         if self._force or in_day or self._interval == -3:                                # storeDB enabled, SolCast enabled, daylight
             if self._storeDB or self._storeInflux:
                 if self._storeDB:
@@ -86,6 +87,7 @@ class SolCast(Forecast):
                 else:
                     self._influx    = InfluxRepo(self.config)
                     self.last_issue = self._influx.getLastIssueTime(self.SQLTable)
+                print(f"now_utc={now_utc}, self.last_issue={self.last_issue}");
                 delta_t             = round((now_utc - self.last_issue).total_seconds()/60)
                 if self._force or self._interval > 0:                                    # we use an explicit calling interval
                     if self._force or delta_t > self._interval - 2:
@@ -110,6 +112,7 @@ class SolCast(Forecast):
                         interval = (night_period / self._night_factor + day_period) / have
                         if not in_day:
                             interval *= self._night_factor
+                        print(f"have={have}, day_period={day_period}, night_period={night_period}, interval={interval}, delta_t={delta_t}, in_day={in_day}")
                     else:
                         interval = optimal
                     if delta_t > interval - 2:
