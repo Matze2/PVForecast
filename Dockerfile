@@ -1,10 +1,18 @@
-FROM python:3.12-alpine
+FROM python:3-slim
 
-WORKDIR /usr/src/app
+WORKDIR /pvforecast
 COPY . .
 
-ENV PYTHONPATH=/usr/lib/python3.12/site-packages
-RUN apk --no-cache add py3-numpy py3-scipy py3-h5py && \
-    pip install --no-cache-dir --prefer-binary -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && rm -rfv /root/.cache/pip
 
-CMD [ "python", "./PVForecasts.py" ]
+RUN : \
+	&& apt-get update && apt-get install -y --no-install-recommends cron \
+	&& apt-get -qy clean \
+	&& rm -rfv /var/lib/apt \
+	&& rm -rfv /var/lib/dpkg
+
+RUN touch /var/log/cron.log && \
+	echo "*/1 * * * * cd /pvforecast && /usr/local/bin/python PVForecasts.py >> /var/log/cron.log 2>&1" | crontab -
+
+CMD cron && exec tail -f /var/log/cron.log
+
