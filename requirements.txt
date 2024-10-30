@@ -15,7 +15,7 @@ pandas>=1.4.0
 #    if Influx <= 1.8 is used
 influxdb>=5.3.1
 #    if Influx 2.x is used
-influxdb_client
+# influxdb_client
 #    Influx 3.x not supported
 
 # following libraries are - depending on OS - more difficult to install. That's why
