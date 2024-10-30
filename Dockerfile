@@ -11,8 +11,8 @@ RUN : \
 	&& rm -rfv /var/lib/apt \
 	&& rm -rfv /var/lib/dpkg
 
-RUN touch /var/log/cron.log && \
-	echo "*/1 * * * * cd /pvforecast && /usr/local/bin/python PVForecasts.py >> /var/log/cron.log 2>&1" | crontab -
+RUN mkdir /pvforecast/log && \
+	echo "*/15 * * * * cd /pvforecast && /usr/local/bin/python PVForecasts.py >> /pvforecast/log/cron.log 2>&1" | crontab -
 
-CMD cron && exec tail -f /var/log/cron.log
+CMD touch /pvforecast/log/cron.log && cron && exec tail -f /pvforecast/log/cron.log
 
